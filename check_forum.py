@@ -1,5 +1,9 @@
 def main():
-    state = load_state()
+    payload = {
+        "content": "GitHub Actions 定期実行テスト"
+    }
+    discord_post(f"/channels/{NOTIFY_CHANNEL_ID}/messages", payload)
+    print("done")
     
     print("checker started")
 print("guild:", GUILD_ID)
