@@ -1,13 +1,12 @@
 def main():
     state = load_state()
+
+    initialized = state.get("initialized", False)
     seen = set(str(x) for x in state.get("seen_message_ids", []))
     new_seen = list(state.get("seen_message_ids", []))
 
     threads = fetch_active_forum_threads()
     threads = sorted(threads, key=lambda t: int(t["id"]))
-
-    # 初回実行: 通知せず、既存メッセージを全部既読扱いにする
-    first_run = len(seen) == 0
 
     for thread in threads:
         messages = fetch_recent_messages(thread["id"], limit=10)
@@ -19,13 +18,13 @@ def main():
             if msg_id in seen:
                 continue
 
-            # botメッセージはスキップ
             if msg.get("author", {}).get("bot"):
                 new_seen.append(msg_id)
                 seen.add(msg_id)
                 continue
 
-            if first_run:
+            # 初回だけ通知せず登録だけする
+            if not initialized:
                 new_seen.append(msg_id)
                 seen.add(msg_id)
                 continue
@@ -36,6 +35,7 @@ def main():
             new_seen.append(msg_id)
             seen.add(msg_id)
 
+    state["initialized"] = True
     state["seen_message_ids"] = new_seen
     save_state(state)
     print("done")
