@@ -3,10 +3,10 @@ name: forum-check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: "*/5 * * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   run-check:
@@ -31,3 +31,11 @@ jobs:
           DISCORD_FORUM_CHANNEL_ID: ${{ secrets.DISCORD_FORUM_CHANNEL_ID }}
           DISCORD_NOTIFY_CHANNEL_ID: ${{ secrets.DISCORD_NOTIFY_CHANNEL_ID }}
         run: python check_forum.py
+
+      - name: Commit state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git diff --cached --quiet || git commit -m "Update forum state"
+          git push
