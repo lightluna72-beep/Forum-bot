@@ -1,5 +1,10 @@
 def main():
     state = load_state()
+    
+    print("checker started")
+print("guild:", GUILD_ID)
+print("forum:", FORUM_CHANNEL_ID)
+print("notify:", NOTIFY_CHANNEL_ID)
 
     initialized = state.get("initialized", False)
     seen = set(str(x) for x in state.get("seen_message_ids", []))
